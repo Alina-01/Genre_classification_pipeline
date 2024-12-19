@@ -16,7 +16,7 @@
 
     - name: Ensure the target directory exists
       ansible.builtin.file:
-        path: "{{ remote_dir }}/templates"
+        path: "{{ remote_dir }}"
         state: directory
         owner: ubuntu
         group: ubuntu
@@ -36,27 +36,57 @@
         dest: "{{ remote_dir }}/"
       loop: "{{ local_files }}"
 
-    - name: Update
+    - name: Update package list
       ansible.builtin.shell: 
         cmd: sudo apt update
-        
+
     - name: Install python
       ansible.builtin.shell: 
         cmd: sudo apt install --yes --force-yes python3-pip
 
-    - name: Install all requirement
+    - name: Install all requirements
       ansible.builtin.shell: 
         cmd: pip install -r genre_clf/requirements.txt
 
-    - name: Change ownership of files to ubuntu
+    - name: Ensure correct ownership of templates directory
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/templates"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Ensure correct ownership of files in templates directory
       ansible.builtin.file:
         path: "{{ remote_dir }}/templates/{{ item }}"
         owner: ubuntu
         group: ubuntu
         mode: '0644'
       loop:
-        - "index.html"
-        - "result.html"
+        - index.html
+        - result.html
+
+    - name: Create a symbolic link for the templates directory (if needed)
+      ansible.builtin.shell:
+        cmd: ln -s /home/ubuntu/genre_clf/templates /home/ubuntu/genre_clf/genre_clf/templates
+      when: ansible_facts['os_family'] == 'Debian'  # Adjust this if necessary
+
+    - name: Check the current working directory
+      ansible.builtin.shell:
+        cmd: pwd
+      register: current_directory
+
+    - name: Print current working directory
+      ansible.builtin.debug:
+        msg: "Current working directory: {{ current_directory.stdout }}"
+
+    - name: List files in the remote directory
+      ansible.builtin.shell:
+        cmd: ls -l /home/ubuntu/genre_clf/templates
+      register: file_listing
+
+    - name: Debug file listing
+      ansible.builtin.debug:
+        msg: "{{ file_listing.stdout }}"
 
     - name: Start python server asynchronously
       ansible.builtin.shell:
@@ -65,15 +95,6 @@
       poll: 0      # Do not wait for completion, continue with next tasks
       register: python_output
 
-    - name: List files in the remote directory
-      ansible.builtin.shell:
-        cmd: ls -l {{ remote_dir }}/templates
-      register: file_listing
-
-    - name: Debug file listing
-      ansible.builtin.debug:
-        msg: "{{ file_listing.stdout }}"
-    
     - name: Print the website link
       ansible.builtin.debug:
         msg: "You can access the application at: http://{{ ansible_host }}:5000/"
