@@ -30,10 +30,12 @@
 
     - name: Copy template files
       ansible.builtin.copy:
-        src: "server/templates/"
+        src: "{{ item }}"
         dest: "server/templates/"
-        remote_src: no
-        recursive: yes
+    loop:
+      - "genre_clf/server/templates/index.html"
+      - "genre_clf/server/templates/result.html"
+    remote_src: no
 
     - name: Update
       ansible.builtin.shell: 
