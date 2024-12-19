@@ -28,25 +28,32 @@
         dest: "{{ remote_dir }}/"
       loop: "{{ local_files }}"
 
-    - name: Update
+    - name: Update package lists
       ansible.builtin.shell: 
         cmd: sudo apt update
-        
-    - name: Install python
+
+    - name: Install python3-pip
       ansible.builtin.shell: 
         cmd: sudo apt install --yes --force-yes python3-pip
 
-    - name: Install all requirement
+    - name: Install all requirements
       ansible.builtin.shell: 
-        cmd: pip install -r genre_clf/requirements.txt
+        cmd: pip3 install -r /home/ubuntu/genre_clf/requirements.txt
+
+    - name: Ensure the firewall allows port 5000 (Flask default)
+      ansible.builtin.ufw:
+        rule: allow
+        name: '5000'
+        state: enabled
 
     - name: Start python server asynchronously
       ansible.builtin.shell:
         cmd: "python3 /home/ubuntu/genre_clf/app.py"
       async: 3600  # Maximum running time (1 hour)
-      poll: 0      # Do not wait for completion, continue with next tasks
+      poll: 1      # Wait for completion to ensure server starts
       register: python_output
 
     - name: Print the website link
       ansible.builtin.debug:
         msg: "You can access the application at: http://{{ ansible_host }}:5000/"
+
