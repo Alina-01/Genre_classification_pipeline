@@ -65,10 +65,24 @@
         - index.html
         - result.html
 
-    - name: Create a symbolic link for the templates directory (if needed)
+    - name: Check if the target directory for the symbolic link exists
+      ansible.builtin.stat:
+        path: "{{ remote_dir }}/server"
+      register: server_dir_stat
+
+    - name: Create the target directory for the symbolic link if not exists
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/server"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+      when: not server_dir_stat.stat.exists
+
+    - name: Create a symbolic link for the templates directory
       ansible.builtin.shell:
-        cmd: ln -s /home/ubuntu/genre_clf/templates /home/ubuntu/genre_clf/genre_clf/templates
-      when: ansible_facts['os_family'] == 'Debian'  # Adjust this if necessary
+        cmd: ln -s /home/ubuntu/genre_clf/templates /home/ubuntu/genre_clf/server/templates
+      when: server_dir_stat.stat.exists
 
     - name: Check the current working directory
       ansible.builtin.shell:
