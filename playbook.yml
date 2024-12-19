@@ -5,13 +5,13 @@
   vars:
     remote_dir: "/home/ubuntu/genre_clf"
     local_files:
-      - "/home/ubuntu/jenkins/workspace/semenistyh_build/server/requirements.txt"
-      - "/home/ubuntu/jenkins/workspace/semenistyh_build/server/app.py"
-      - "/home/ubuntu/jenkins/workspace/semenistyh_build/server/utils/feature_extraction.py"
-      - "/home/ubuntu/jenkins/workspace/semenistyh_build/server/model/min_max_scaler.pkl"
-      - "/home/ubuntu/jenkins/workspace/semenistyh_build/server/model/xgb_mgen.pkl"
-      - "/home/ubuntu/jenkins/workspace/semenistyh_build/server/templates/index.html"
-      - "/home/ubuntu/jenkins/workspace/semenistyh_build/server/templates/result.html"
+      - "semenistyh_build/server/requirements.txt"
+      - "semenistyh_build/server/app.py"
+      - "semenistyh_build/server/utils/feature_extraction.py"
+      - "semenistyh_build/server/model/min_max_scaler.pkl"
+      - "semenistyh_build/server/model/xgb_mgen.pkl"
+      - "semenistyh_build/server/templates/index.html"
+      - "semenistyh_build/server/templates/result.html"
   tasks:
 
     - name: Ensure the target directory exists
