@@ -1,3 +1,4 @@
+---
 - name: Deployment of Genre Classification application
   hosts: all
   become: yes
@@ -27,37 +28,18 @@
         dest: "{{ remote_dir }}/"
       loop: "{{ local_files }}"
 
-    - name: Update package lists
+    - name: Update
       ansible.builtin.shell: 
         cmd: sudo apt update
-
-    - name: Install python3-pip
+        
+    - name: Install python
       ansible.builtin.shell: 
         cmd: sudo apt install --yes --force-yes python3-pip
 
-    - name: Install all requirements
+    - name: Install all requirement
       ansible.builtin.shell: 
-        cmd: pip3 install -r /home/ubuntu/genre_clf/requirements.txt
+        cmd: pip install --upgrade -r genre_clf/requirements.txt
 
-    - name: Enable UFW if not enabled
+    - name: Start python server 
       ansible.builtin.shell:
-        cmd: sudo ufw enable
-        creates: /etc/ufw/user.rules  # Check if UFW is already enabled
-
-    - name: Allow port 5000 through firewall (for Flask)
-      ansible.builtin.ufw:
-        rule: allow
-        port: "5000"
-        proto: tcp
-        state: enabled
-
-    - name: Start python server asynchronously
-      ansible.builtin.shell:
-        cmd: "python3 /home/ubuntu/genre_clf/app.py"
-      async: 3600  # Maximum running time (1 hour)
-      poll: 1      # Wait for completion to ensure server starts
-      register: python_output
-
-    - name: Print the website link
-      ansible.builtin.debug:
-        msg: "You can access the application at: http://{{ ansible_host }}:5000/"
+        cmd: python3 genre_clf/app.py
