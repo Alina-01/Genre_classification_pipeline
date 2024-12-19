@@ -26,28 +26,28 @@
       ansible.builtin.stat:
         path: "{{ item }}"
       loop: "{{ local_files }}"
-      register: file_check
+      register: file_check_results
 
     - name: Fail if any file is missing
       ansible.builtin.fail:
-        msg: "File {{ item.stat.path }} is missing."
+        msg: "File {{ item.item }} is missing!"
       when: not item.stat.exists
-      loop: "{{ file_check.results }}"
+      loop: "{{ file_check_results.results }}"
 
     - name: Copy files to remote server
       ansible.builtin.copy:
         src: "{{ item }}"
         dest: "{{ remote_dir }}/"
-        remote_src: no
       loop: "{{ local_files }}"
 
     - name: Update
-      ansible.builtin.shell:
-        cmd: sudo apt update
+      ansible.builtin.apt:
+        update_cache: yes
 
     - name: Install python
-      ansible.builtin.shell:
-        cmd: sudo apt install --yes python3-pip
+      ansible.builtin.apt:
+        name: python3-pip
+        force: yes
 
     - name: Install all requirements
       ansible.builtin.shell:
