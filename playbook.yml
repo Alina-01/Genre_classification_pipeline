@@ -28,12 +28,6 @@
         dest: "{{ remote_dir }}/"
       loop: "{{ local_files }}"
 
-    - name: Copy template files
-      ansible.builtin.copy:
-        src: "genre_clf/server/templates/"
-        dest: "/home/ubuntu/genre_clf/server/templates/"
-        remote_src: no
-
     - name: Update
       ansible.builtin.shell: 
         cmd: sudo apt update
