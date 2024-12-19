@@ -32,7 +32,7 @@
       ansible.builtin.shell: 
         cmd: sudo apt update
         
-        - name: Install python
+    - name: Install python
       ansible.builtin.shell: 
         _raw_params: sudo apt install --yes --force-yes python3-pip
 
