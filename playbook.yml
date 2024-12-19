@@ -19,6 +19,10 @@
         _raw_params: "pwd"
       register: result
 
+    - name: Display current directory
+      ansible.builtin.debug:
+        msg: "Current directory is {{ result.stdout }}"
+
     - name: Ensure the target directory exists
       ansible.builtin.file:
         path: "{{ remote_dir }}"
