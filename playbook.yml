@@ -17,6 +17,7 @@
     - name: Print current directory
       ansible.builtin.shell:
         _raw_params: "pwd"
+      register: result
 
     - name: Ensure the target directory exists
       ansible.builtin.file:
