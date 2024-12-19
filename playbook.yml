@@ -14,15 +14,6 @@
       - "server/templates/result.html"
   tasks:
 
-  - name: Print current directory
-      ansible.builtin.shell:
-        _raw_params: "pwd"
-      register: result
-
-    - name: Display current directory
-      ansible.builtin.debug:
-        msg: "Current directory is {{ result.stdout }}"
-
     - name: Ensure the target directory exists
       ansible.builtin.file:
         path: "{{ remote_dir }}"
@@ -55,4 +46,4 @@
 
     - name: Print the website link
       ansible.builtin.debug:
-        msg: "You can access the application at: http://{{ ansible_host }}/"
+        msg: "You can access the application at: http://{{ ansible_host }}:8000"
