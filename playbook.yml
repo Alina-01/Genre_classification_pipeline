@@ -2,45 +2,36 @@
 - name: Deployment of Genre Classification application
   hosts: all
   become: yes
-  vars:
-    remote_dir: "/home/ubuntu/genre_clf"
-    local_files:
-      - "/home/ubuntu/genre_clf/server/requirements.txt"
-      - "/home/ubuntu/genre_clf/server/app.py"
-      - "/home/ubuntu/genre_clf/server/utils/feature_extraction.py"
-      - "/home/ubuntu/genre_clf/server/model/min_max_scaler.pkl"
-      - "/home/ubuntu/genre_clf/server/model/xgb_mgen.pkl"
-      - "/home/ubuntu/genre_clf/server/templates/index.html"
-      - "/home/ubuntu/genre_clf/server/templates/result.html"
   tasks:
-
     - name: Ensure the target directory exists
       ansible.builtin.file:
-        path: "{{ remote_dir }}"
+        path: /home/ubuntu/genre_clf
         state: directory
-        owner: ubuntu
-        group: ubuntu
-        mode: '0755'
 
     - name: Copy files to remote server
       ansible.builtin.copy:
         src: "{{ item }}"
-        dest: "{{ remote_dir }}/"
-      loop: "{{ local_files }}"
+        dest: "/home/ubuntu/genre_clf/{{ item | basename }}"
+      with_items:
+        - /home/ubuntu/genre_clf/server/requirements.txt
+        - /home/ubuntu/genre_clf/server/app.py
+        - /home/ubuntu/genre_clf/server/utils/feature_extraction.py
+        - /home/ubuntu/genre_clf/server/model/min_max_scaler.pkl
+        - /home/ubuntu/genre_clf/server/model/xgb_mgen.pkl
+        - /home/ubuntu/genre_clf/server/templates/index.html
+        - /home/ubuntu/genre_clf/server/templates/result.html
 
-    - name: Update
-      ansible.builtin.shell: 
-        cmd: sudo apt update
-        
     - name: Install python
-      ansible.builtin.shell: 
-        _raw_params: sudo apt install --yes --force-yes python3-pip
+      ansible.builtin.shell: "sudo apt install --yes --force-yes python3-pip"
 
-    - name: Install all requirement
-      ansible.builtin.shell: 
-        cmd: pip install -r genre_clf/requirements.txt
+    - name: Install all requirements
+      ansible.builtin.shell: "pip install -r /home/ubuntu/genre_clf/requirements.txt"
 
-    - name: Start python file
-      ansible.builtin.shell: 
-        cmd: python3 ~/genre_clf/app.py
-        
+    - name: Install gunicorn
+      ansible.builtin.shell: "sudo pip install gunicorn"
+
+    - name: Run the application using gunicorn
+      ansible.builtin.shell: "gunicorn --bind 0.0.0.0:5000 app:app"
+      args:
+        chdir: /home/ubuntu/genre_clf/server
+        creates: /home/ubuntu/genre_clf/server/gunicorn.pid
