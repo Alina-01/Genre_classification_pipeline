@@ -13,7 +13,6 @@
       - "server/templates/index.html"
       - "server/templates/result.html"
   tasks:
-
     - name: Ensure the target directory exists
       ansible.builtin.file:
         path: "{{ remote_dir }}"
@@ -34,21 +33,48 @@
         dest: "{{ remote_dir }}/templates/"
         remote_src: no
 
-    - name: Update
-      ansible.builtin.shell: 
-        cmd: sudo apt update
-        
-    - name: Install python
-      ansible.builtin.shell: 
+    - name: Install python3 and pip
+      ansible.builtin.shell:
         cmd: sudo apt install --yes --force-yes python3-pip
 
-    - name: Install all requirement
-      ansible.builtin.shell: 
-        cmd: pip install -r genre_clf/requirements.txt
+    - name: Ensure the virtual environment is created
+      ansible.builtin.shell:
+        cmd: python3 -m venv /home/ubuntu/genre_clf/venv
+        creates: /home/ubuntu/genre_clf/venv
+
+    - name: Install requirements in virtual environment
+      ansible.builtin.shell:
+        cmd: /home/ubuntu/genre_clf/venv/bin/pip install -r /home/ubuntu/genre_clf/requirements.txt
+      args:
+        chdir: /home/ubuntu/genre_clf
+
+    - name: Set correct permissions on genre_clf directory
+      ansible.builtin.file:
+        path: "{{ remote_dir }}"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Set correct permissions on templates directory
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/templates"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Set correct permissions on all files in the templates directory
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/templates/{{ item }}"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+      loop:
+        - index.html
+        - result.html
 
     - name: Start python server asynchronously
       ansible.builtin.shell:
-        cmd: "python3 /home/ubuntu/genre_clf/app.py"
+        cmd: "/home/ubuntu/genre_clf/venv/bin/python3 /home/ubuntu/genre_clf/app.py"
       async: 3600  # Maximum running time (1 hour)
       poll: 0      # Do not wait for completion, continue with next tasks
       register: python_output
@@ -56,3 +82,7 @@
     - name: Print the website link
       ansible.builtin.debug:
         msg: "You can access the application at: http://{{ ansible_host }}:5000/"
+
+    - name: Restart the application (if necessary)
+      ansible.builtin.shell:
+        cmd: pkill -f 'python3 /home/ubuntu/genre_clf/app.py' || true
