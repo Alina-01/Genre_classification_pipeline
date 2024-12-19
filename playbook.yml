@@ -30,9 +30,9 @@
 
     - name: Copy template files
       ansible.builtin.copy:
-        src: genre_clf/server/templates/index.html
-        dest: genre_clf/server/templates/index.html
-        remote_src: yes
+        src: "genre_clf/server/templates/"
+        dest: "/home/ubuntu/genre_clf/server/templates/"
+        remote_src: no
 
     - name: Update
       ansible.builtin.shell: 
