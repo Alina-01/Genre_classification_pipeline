@@ -4,7 +4,6 @@
   become: yes
   vars:
     remote_dir: "/home/ubuntu/genre_clf"
-    templates_dir: "/home/ubuntu/genre_clf/server/templates"  # Обновленный путь
     local_files:
       - "server/requirements.txt"
       - "server/app.py"
@@ -23,39 +22,21 @@
         group: ubuntu
         mode: '0755'
 
-    - name: Ensure templates directory exists
-      ansible.builtin.file:
-        path: "{{ templates_dir }}"
-        state: directory
-        owner: ubuntu
-        group: ubuntu
-        mode: '0755'
-
     - name: Copy files to remote server
       ansible.builtin.copy:
         src: "{{ item }}"
         dest: "{{ remote_dir }}/"
       loop: "{{ local_files }}"
 
-    - name: Ensure correct ownership of files in templates directory
-      ansible.builtin.file:
-        path: "{{ templates_dir }}/{{ item }}"
-        owner: ubuntu
-        group: ubuntu
-        mode: '0644'
-      loop:
-        - "index.html"
-        - "result.html"
-
-    - name: Update system
+    - name: Update
       ansible.builtin.shell: 
         cmd: sudo apt update
-
+        
     - name: Install python
       ansible.builtin.shell: 
         cmd: sudo apt install --yes --force-yes python3-pip
 
-    - name: Install all requirements
+    - name: Install all requirement
       ansible.builtin.shell: 
         cmd: pip install -r genre_clf/requirements.txt
 
