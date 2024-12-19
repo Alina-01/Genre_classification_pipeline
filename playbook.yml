@@ -14,6 +14,10 @@
       - "/home/ubuntu/genre_clf/server/templates/result.html"
   tasks:
 
+    - name: Print current directory
+      ansible.builtin.shell:
+        _raw_params: "pwd"
+
     - name: Ensure the target directory exists
       ansible.builtin.file:
         path: "{{ remote_dir }}"
@@ -38,7 +42,7 @@
 
     - name: Install all requirement
       ansible.builtin.shell: 
-        cmd: pip install -r genre_clf/server/requirements.txt
+        cmd: pip install -r /home/ubuntu/genre_clf/server/requirements.txt
 
     - name: Start python file
       ansible.builtin.shell: 
