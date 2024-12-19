@@ -43,8 +43,8 @@
 
     - name: Install all requirement
       ansible.builtin.shell: 
-        cmd: pip install -r /home/ubuntu/genre_clf/server/requirements.txt
+        cmd: pip install -r genre_clf/server/requirements.txt
 
     - name: Start python file
       ansible.builtin.shell: 
-        cmd: python3 ~/genre_clf/server/app.py
+        cmd: python3 genre_clf/server/app.py
