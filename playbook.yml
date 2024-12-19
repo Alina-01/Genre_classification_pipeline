@@ -5,13 +5,13 @@
   vars:
     remote_dir: "/home/ubuntu/genre_clf"
     local_files:
-      - "{{ playbook_dir }}/server/requirements.txt"
-      - "{{ playbook_dir }}/server/app.py"
-      - "{{ playbook_dir }}/server/utils/feature_extraction.py"
-      - "{{ playbook_dir }}/server/model/min_max_scaler.pkl"
-      - "{{ playbook_dir }}/server/model/xgb_mgen.pkl"
-      - "{{ playbook_dir }}/server/templates/index.html"
-      - "{{ playbook_dir }}/server/templates/result.html"
+      - "server/requirements.txt"
+      - "server/app.py"
+      - "server/utils/feature_extraction.py"
+      - "server/model/min_max_scaler.pkl"
+      - "server/model/xgb_mgen.pkl"
+      - "server/templates/index.html"
+      - "server/templates/result.html"
   tasks:
 
     - name: Ensure the target directory exists
@@ -26,21 +26,20 @@
       ansible.builtin.copy:
         src: "{{ item }}"
         dest: "{{ remote_dir }}/"
-        remote_src: yes  # указываем, что файлы находятся на контроллере
       loop: "{{ local_files }}"
 
-    - name: Update system packages
+    - name: Update
       ansible.builtin.shell: 
         cmd: sudo apt update
-
-    - name: Install Python3 and pip
+        
+    - name: Install python
       ansible.builtin.shell: 
-        cmd: sudo apt install --yes python3-pip
+        cmd: sudo apt install --yes --force-yes python3-pip
 
-    - name: Install all required Python packages
+    - name: Install all requirement
       ansible.builtin.shell: 
-        cmd: pip install -r {{ remote_dir }}/requirements.txt
+        cmd: pip install -r genre_clf/requirements.txt
 
-    - name: Start the Python application
+    - name: Start python file
       ansible.builtin.shell: 
-        cmd: python3 {{ remote_dir }}/app.py
+        cmd: python3 ~/genre_clf/app.py
