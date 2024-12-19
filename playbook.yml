@@ -16,7 +16,7 @@
 
     - name: Ensure the target directory exists
       ansible.builtin.file:
-        path: "{{ remote_dir }}"
+        path: "{{ remote_dir }}/templates"
         state: directory
         owner: ubuntu
         group: ubuntu
