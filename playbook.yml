@@ -22,85 +22,23 @@
         group: ubuntu
         mode: '0755'
 
-    - name: Ensure the templates directory exists
-      ansible.builtin.file:
-        path: "{{ remote_dir }}/templates"
-        state: directory
-        owner: ubuntu
-        group: ubuntu
-        mode: '0755'
-
     - name: Copy files to remote server
       ansible.builtin.copy:
         src: "{{ item }}"
         dest: "{{ remote_dir }}/"
       loop: "{{ local_files }}"
 
-    - name: Update package list
+    - name: Update
       ansible.builtin.shell: 
         cmd: sudo apt update
-
+        
     - name: Install python
       ansible.builtin.shell: 
         cmd: sudo apt install --yes --force-yes python3-pip
 
-    - name: Install all requirements
+    - name: Install all requirement
       ansible.builtin.shell: 
         cmd: pip install -r genre_clf/requirements.txt
-
-    - name: Ensure correct ownership of templates directory
-      ansible.builtin.file:
-        path: "{{ remote_dir }}/templates"
-        owner: ubuntu
-        group: ubuntu
-        mode: '0755'
-
-    - name: Ensure correct ownership of files in templates directory
-      ansible.builtin.file:
-        path: "{{ remote_dir }}/templates/{{ item }}"
-        owner: ubuntu
-        group: ubuntu
-        mode: '0644'
-      loop:
-        - index.html
-        - result.html
-
-    - name: Check if the target directory for the symbolic link exists
-      ansible.builtin.stat:
-        path: "{{ remote_dir }}/server"
-      register: server_dir_stat
-
-    - name: Create the target directory for the symbolic link if not exists
-      ansible.builtin.file:
-        path: "{{ remote_dir }}/server"
-        state: directory
-        owner: ubuntu
-        group: ubuntu
-        mode: '0755'
-      when: not server_dir_stat.stat.exists
-
-    - name: Create a symbolic link for the templates directory
-      ansible.builtin.shell:
-        cmd: ln -s /home/ubuntu/genre_clf/templates /home/ubuntu/genre_clf/server/templates
-      when: server_dir_stat.stat.exists
-
-    - name: Check the current working directory
-      ansible.builtin.shell:
-        cmd: pwd
-      register: current_directory
-
-    - name: Print current working directory
-      ansible.builtin.debug:
-        msg: "Current working directory: {{ current_directory.stdout }}"
-
-    - name: List files in the remote directory
-      ansible.builtin.shell:
-        cmd: ls -l /home/ubuntu/genre_clf/templates
-      register: file_listing
-
-    - name: Debug file listing
-      ansible.builtin.debug:
-        msg: "{{ file_listing.stdout }}"
 
     - name: Start python server asynchronously
       ansible.builtin.shell:
