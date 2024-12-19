@@ -22,6 +22,14 @@
         group: ubuntu
         mode: '0755'
 
+    - name: Ensure the templates directory exists
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/templates"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
     - name: Copy files to remote server
       ansible.builtin.copy:
         src: "{{ item }}"
@@ -47,6 +55,15 @@
       poll: 0      # Do not wait for completion, continue with next tasks
       register: python_output
 
+    - name: List files in the remote directory
+      ansible.builtin.shell:
+        cmd: ls -l {{ remote_dir }}/templates
+      register: file_listing
+
+    - name: Debug file listing
+      ansible.builtin.debug:
+        msg: "{{ file_listing.stdout }}"
+    
     - name: Print the website link
       ansible.builtin.debug:
         msg: "You can access the application at: http://{{ ansible_host }}:5000/"
