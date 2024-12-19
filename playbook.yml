@@ -34,12 +34,13 @@
         
     - name: Install python
       ansible.builtin.shell: 
-        _raw_params: sudo apt install --yes --force-yes python3-pip
+        cmd: sudo apt install --yes --force-yes python3-pip
 
     - name: Install all requirement
       ansible.builtin.shell: 
-        _raw_params: pip install -r genre_clf/requirements.txt
+        cmd: pip install -r genre_clf/requirements.txt
 
     - name: Start python file
       ansible.builtin.shell: 
         cmd: python3 ~/genre_clf/app.py
+        
