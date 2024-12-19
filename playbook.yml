@@ -4,7 +4,7 @@
   become: yes
   vars:
     remote_dir: "/home/ubuntu/genre_clf"
-    templates_dir: "/home/ubuntu/genre_clf/templates"
+    templates_dir: "/home/ubuntu/genre_clf/server/templates"  # Обновленный путь
     local_files:
       - "server/requirements.txt"
       - "server/app.py"
