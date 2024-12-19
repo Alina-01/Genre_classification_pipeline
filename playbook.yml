@@ -48,6 +48,16 @@
       ansible.builtin.shell: 
         cmd: pip install -r genre_clf/requirements.txt
 
+    - name: Change ownership of files to ubuntu
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/templates/{{ item }}"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+      loop:
+        - "index.html"
+        - "result.html"
+
     - name: Start python server asynchronously
       ansible.builtin.shell:
         cmd: "python3 /home/ubuntu/genre_clf/app.py"
