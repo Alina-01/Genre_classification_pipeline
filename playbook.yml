@@ -32,13 +32,13 @@
       ansible.builtin.shell: 
         cmd: sudo apt update
         
-    - name: Install python
+        - name: Install python
       ansible.builtin.shell: 
-        cmd: sudo apt install --yes --force-yes python3-pip
+        _raw_params: sudo apt install --yes --force-yes python3-pip
 
     - name: Install all requirement
       ansible.builtin.shell: 
-        cmd: pip install -r genre_clf/requirements.txt
+        _raw_params: pip install -r genre_clf/requirements.txt
 
     - name: Start python file
       ansible.builtin.shell: 
